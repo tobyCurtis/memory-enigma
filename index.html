@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cards">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Memory Game</title>
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <!-- endbower -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/app/styles/style.css">
+  <!-- endinject -->
+</head>
+
+<body>
+  <!-- bower:js -->
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.js"></script>
+  <!-- endbower -->
+  <div class="container" ng-controller="CardController">
+    <h1 class="text-center">Memory Game</h1>
+    <div ng-repeat="row in deck.rows">
+      <div class="col-xs-2" ng-repeat="card in row.cards">
+        <div class="cardContainer {{!card.isFaceUp ? '' : 'flip'}}" ng-click="check(card)">
+          <div class="card shadow">
+            <div class="face"></div>
+            <div class="back face text-center">
+              <p> {{card.item}} </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- inject:js -->
+    <script src="/app/app.js"></script>
+    <!-- endinject -->
+</body>
+
+</html>
