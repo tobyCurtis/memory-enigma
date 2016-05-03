@@ -6,8 +6,7 @@ var previousCard = null;
 var numPairs = 0;
 
 //this function adds the random letter cards we put into a stack and organizes them into the right rows and columns
-function createDeck()
-{
+function createDeck() {
     var rows = 6;
     var cols = 6;
     var key = createRandom();
@@ -15,14 +14,12 @@ function createDeck()
     deck.rows = [];
 
     // create each row
-    for (var i = 0; i < rows; i++)
-    {
+    for (var i = 0; i < rows; i++) {
         var row = {};
         row.cards = [];
 
         // creat each card in the row
-        for (var j = 0; j < cols; j++)
-        {
+        for (var j = 0; j < cols; j++) {
             var card = {};
             card.isFaceUp = false;
             card.item = key.pop();
@@ -35,25 +32,19 @@ function createDeck()
 
 //this function takes a hard-coded array of characters and picks characters randomly. It then puts two of each random character in another 
 //array, and removes the letter it picked from the choices so that the letter won't be duplicated as another match pair
-function createRandom()
-{
+function createRandom() {
     var matches = 18;
     var pool = [];
     var answers = [];
     var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'W', 'X', 'Y', 'Z'];
 
-    // makes a placeholder array to work with
-    
-
     // create array for the total number of cards with the index mathing the value as a plceholder
-    for (var i = 0; i < matches * 2; i++)
-    {
+    for (var i = 0; i < matches * 2; i++) {
         pool.push(i); // random numbers
     }
 
     // generate an array with the random letters
-    for (var n = 0; n < matches; n++)
-    {
+    for (var n = 0; n < matches; n++) {
         // grab random letter from array and remove that letter from the
         // original array
 
@@ -82,65 +73,65 @@ function createRandom()
 }
 
 // uses splice to remove from array
-function removeByIndex(arr, index)
-{
+function removeByIndex(arr, index) {
     arr.splice(index, 1);
 }
 
 //uses splice to add to array
-function insertByIndex(arr, index, item)
-{
+function insertByIndex(arr, index, item) {
     arr.splice(index, 0, item);
 }
 
 
 var app = angular.module('cards', ['ngAnimate']);
 
-app.controller("CardController", function($scope, $timeout)
-{
+app.controller("CardController", function($scope, $timeout) {
 
     $scope.deck = createDeck();
+    $scope.isGuarding = false;
+
+    $scope.guard = function(card) {
+        if (!$scope.isGuarding)
+            $scope.check(card);
+    };
+
+    $scope.check = function(card) {
+        //case that there is a match of 2 cards picked
+        if (currentSessionOpen && previousCard.item == card.item && !card.isFaceUp) {
+            card.isFaceUp = true;
+            previousCard = null;
+            currentSessionOpen = false;
+            numPairs++;
+        }
+
+        //case that there is not a match of 2 card picked
+        else if (currentSessionOpen && previousCard.item != card.item && !card.isFaceUp) {
+            $scope.isGuarding = true;
+            card.isFaceUp = true;
+            currentSessionOpen = false;
+            //turn the cards back over after we have seen the match fail
+            $timeout(function() {
+                
+                previousCard.isFaceUp = card.isFaceUp = false;
+                previousCard = card;
+                $scope.isGuarding = false;
+
+            }, 400);
+
+        }
+        //if we've only selected one
+        else {
+            card.isFaceUp = true;
+            currentSessionOpen = true;
+            previousCard = card;
+        }
 
 
-
-$scope.check = function(card)
-{
-    //case that there is a match of 2 cards picked
-    if (currentSessionOpen && previousCard.item == card.item && !card.isFaceUp)
-    {
-        card.isFaceUp = true;
-        previousCard = null;
-        currentSessionOpen = false;
-        numPairs++;
-    }
-
-    //case that there is not a match of 2 card picked
-    else if (currentSessionOpen && previousCard.item != card.item && !card.isFaceUp)
-    {
-    	card.isFaceUp = true;
-    	currentSessionOpen = false;
-    	//turn the cards back over after we have seen the match fail
-    	$timeout(function(){
-    		previousCard.isFaceUp = card.isFaceUp = false;
-    		previousCard = null;
-
-    	}, 400);
-
-    }
-    //if we've only selected one
-    else{
-        card.isFaceUp = true;
-        currentSessionOpen = true;
-        previousCard = card;
-    }
-
-
-    //output message upon victory
-    if (numPairs == 18)
-    {
-        alert("You've Done It!");
-    }
-};
+        //output message upon victory
+        if (numPairs == 18) {
+            alert("You've Done It!");
+        }
+    };
 
 
 });
